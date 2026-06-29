@@ -38,7 +38,7 @@ const knowledgeSchema = z.object({
     .optional()
     .describe("Frequently asked questions"),
   summary: z.string().describe("Brief summary of the content"),
-  additionalContext: z.record(z.string(), z.string()).optional().describe("Any other relevant information"),
+  additionalNotes: z.array(z.string()).optional().describe("Any other relevant information as a list of notes"),
 });
 
 export async function POST(req: Request) {
