@@ -16,7 +16,7 @@ export type LLMProvider = "openai" | "anthropic" | "google" | "groq" | "openrout
 
 export interface NodeData {
   label: string;
-  type: "input" | "knowledge" | "prompt" | "output";
+  type: "input" | "knowledge" | "prompt" | "output" | "image-gen" | "coming-soon";
   status: NodeStatus;
   content?: string;
   file?: { name: string; content: string; type: string };

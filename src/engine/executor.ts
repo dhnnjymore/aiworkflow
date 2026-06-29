@@ -113,8 +113,12 @@ async function executeNode(
       return executeKnowledgeNode(node, inputs, provider, apiKey);
     case "prompt":
       return executePromptNode(node, inputs, provider, apiKey, callbacks);
+    case "image-gen":
+      return executeImageGenNode(node, inputs, provider, apiKey);
     case "output":
       return executeOutputNode(inputs);
+    case "coming-soon":
+      throw new Error("This node is not yet available");
     default:
       throw new Error(`Unknown node type: ${node.data.type}`);
   }
@@ -202,6 +206,39 @@ async function executePromptNode(
   }
 
   return fullText;
+}
+
+async function executeImageGenNode(
+  node: WorkflowNode,
+  inputs: unknown[],
+  provider: LLMProvider,
+  apiKey: string
+): Promise<string> {
+  const userPrompt = node.data.prompt || "";
+  const context = inputs
+    .map((i) => (typeof i === "string" ? i : JSON.stringify(i, null, 2)))
+    .join("\n\n");
+  const fullPrompt = userPrompt
+    ? `${userPrompt}\n\nContext:\n${context}`
+    : context;
+
+  if (!fullPrompt.trim()) {
+    throw new Error("No prompt or input for image generation");
+  }
+
+  const response = await fetch("/api/image", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt: fullPrompt, provider, apiKey }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: "Image generation failed" }));
+    throw new Error(err.error || "Image generation failed");
+  }
+
+  const { url } = await response.json();
+  return url;
 }
 
 function executeOutputNode(inputs: unknown[]): string {

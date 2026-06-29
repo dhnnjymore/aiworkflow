@@ -75,7 +75,7 @@ export function BaseNode({
         "relative min-w-[240px] max-w-[320px] rounded-xl border bg-card transition-all duration-200",
         config.border,
         config.glow,
-        selected && "ring-2 ring-primary/50 ring-offset-1 ring-offset-background"
+        selected && "ring-2 ring-primary/50"
       )}
     >
       <StatusIndicator status={status} />
@@ -93,7 +93,7 @@ export function BaseNode({
       {hasInput && (
         <Handle
           type="target"
-          position={Position.Top}
+          position={Position.Left}
           className="!bg-muted-foreground !border-background"
         />
       )}
@@ -119,7 +119,7 @@ export function BaseNode({
       {hasOutput && (
         <Handle
           type="source"
-          position={Position.Bottom}
+          position={Position.Right}
           className="!bg-muted-foreground !border-background"
         />
       )}

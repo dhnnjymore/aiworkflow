@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Zap, ArrowDown, Type, BookOpen, MessageSquare, Monitor } from "lucide-react";
+import { Zap, ArrowRight, Type, BookOpen, MessageSquare, Monitor } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useWorkflowStore, type WorkflowNode } from "@/store/workflow-store";
 
@@ -16,19 +16,19 @@ export function EmptyState() {
       {
         id: "input-1",
         type: "input",
-        position: { x: 250, y: 50 },
+        position: { x: 100, y: 250 },
         data: { label: "Input", type: "input", status: "idle" },
       },
       {
         id: "knowledge-1",
         type: "knowledge",
-        position: { x: 250, y: 280 },
+        position: { x: 450, y: 250 },
         data: { label: "Extract Knowledge", type: "knowledge", status: "idle" },
       },
       {
         id: "prompt-1",
         type: "prompt",
-        position: { x: 250, y: 510 },
+        position: { x: 800, y: 250 },
         data: {
           label: "AI Prompt",
           type: "prompt",
@@ -39,7 +39,7 @@ export function EmptyState() {
       {
         id: "output-1",
         type: "output",
-        position: { x: 250, y: 740 },
+        position: { x: 1150, y: 250 },
         data: { label: "Output", type: "output", status: "idle" },
       },
     ];
@@ -74,29 +74,29 @@ export function EmptyState() {
         <div>
           <h2 className="text-lg font-semibold">Build your first workflow</h2>
           <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
-            Add nodes from the toolbar above, connect them together, and hit Run to see AI magic.
+            Add nodes from the sidebar, connect them together, and hit Run.
           </p>
         </div>
 
-        <div className="flex flex-col items-center gap-1.5 text-xs text-muted-foreground/70">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/30 border border-border/50">
+        <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground/70">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/30 border border-border/50">
             <Type className="h-3.5 w-3.5 text-blue-400" />
-            <span>Upload Content</span>
+            <span>Input</span>
           </div>
-          <ArrowDown className="h-3 w-3" />
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/30 border border-border/50">
+          <ArrowRight className="h-3 w-3" />
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/30 border border-border/50">
             <BookOpen className="h-3.5 w-3.5 text-violet-400" />
-            <span>Extract Knowledge</span>
+            <span>Knowledge</span>
           </div>
-          <ArrowDown className="h-3 w-3" />
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/30 border border-border/50">
+          <ArrowRight className="h-3 w-3" />
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/30 border border-border/50">
             <MessageSquare className="h-3.5 w-3.5 text-amber-400" />
-            <span>AI Prompt</span>
+            <span>Prompt</span>
           </div>
-          <ArrowDown className="h-3 w-3" />
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/30 border border-border/50">
+          <ArrowRight className="h-3 w-3" />
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/30 border border-border/50">
             <Monitor className="h-3.5 w-3.5 text-emerald-400" />
-            <span>View Output</span>
+            <span>Output</span>
           </div>
         </div>
 

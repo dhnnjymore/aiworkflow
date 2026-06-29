@@ -16,12 +16,16 @@ import { InputNode } from "@/components/nodes/input-node";
 import { KnowledgeNode } from "@/components/nodes/knowledge-node";
 import { PromptNode } from "@/components/nodes/prompt-node";
 import { OutputNode } from "@/components/nodes/output-node";
+import { ImageGenNode } from "@/components/nodes/image-gen-node";
+import { ComingSoonNode } from "@/components/nodes/coming-soon-node";
 
 const nodeTypes: NodeTypes = {
   input: InputNode,
   knowledge: KnowledgeNode,
   prompt: PromptNode,
   output: OutputNode,
+  "image-gen": ImageGenNode,
+  "coming-soon": ComingSoonNode,
 };
 
 export function WorkflowCanvas() {
