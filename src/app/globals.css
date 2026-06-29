@@ -153,6 +153,22 @@ body {
   border: 1px solid rgba(99, 102, 241, 0.4) !important;
 }
 
+.react-flow__node,
+.react-flow__node.selected,
+.react-flow__node:focus,
+.react-flow__node:focus-visible,
+.react-flow__node:active,
+.react-flow__node.selectable,
+.react-flow__node.selectable:focus,
+.react-flow__node.selectable.selected {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  outline: none !important;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
