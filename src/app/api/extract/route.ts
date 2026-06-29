@@ -27,18 +27,17 @@ function getModel(provider: LLMProvider, apiKey: string) {
 }
 
 const knowledgeSchema = z.object({
-  company: z.string().optional().describe("Company or organization name"),
-  product: z.string().optional().describe("Product or service name"),
-  audience: z.string().optional().describe("Target audience"),
-  features: z.array(z.string()).optional().describe("Key features or capabilities"),
-  tone: z.string().optional().describe("Brand tone and voice"),
-  keyMessages: z.array(z.string()).optional().describe("Key messages or value propositions"),
+  company: z.string().nullable().describe("Company or organization name, or null if not applicable"),
+  product: z.string().nullable().describe("Product or service name, or null if not applicable"),
+  audience: z.string().nullable().describe("Target audience, or null if not applicable"),
+  features: z.array(z.string()).describe("Key features or capabilities, empty array if none"),
+  tone: z.string().nullable().describe("Brand tone and voice, or null if not applicable"),
+  keyMessages: z.array(z.string()).describe("Key messages or value propositions, empty array if none"),
   faqs: z
     .array(z.object({ question: z.string(), answer: z.string() }))
-    .optional()
-    .describe("Frequently asked questions"),
+    .describe("Frequently asked questions, empty array if none"),
   summary: z.string().describe("Brief summary of the content"),
-  additionalNotes: z.array(z.string()).optional().describe("Any other relevant information as a list of notes"),
+  additionalNotes: z.array(z.string()).describe("Any other relevant information as a list of notes, empty array if none"),
 });
 
 export async function POST(req: Request) {
@@ -58,7 +57,7 @@ export async function POST(req: Request) {
     const { object } = await generateObject({
       model,
       schema: knowledgeSchema,
-      prompt: `Extract structured knowledge from the following content. Identify the company, product, audience, features, tone, key messages, FAQs, and any other relevant information. If a field is not applicable, omit it.\n\nContent:\n${content}`,
+      prompt: `Extract structured knowledge from the following content. Identify the company, product, audience, features, tone, key messages, FAQs, and any other relevant information. Use null for string fields that don't apply, and empty arrays for list fields that don't apply.\n\nContent:\n${content}`,
     });
 
     return Response.json(object);
