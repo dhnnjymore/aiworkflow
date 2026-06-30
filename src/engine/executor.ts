@@ -117,6 +117,8 @@ async function executeNode(
       return executeImageGenNode(node, inputs, provider, apiKey);
     case "output":
       return executeOutputNode(inputs);
+    case "frame":
+      return inputs[0] ?? null;
     case "coming-soon":
       throw new Error("This node is not yet available");
     default:
