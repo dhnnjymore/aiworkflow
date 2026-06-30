@@ -14,15 +14,17 @@ export function FrameNode({ id, data, selected }: NodeProps<WorkflowNode>) {
         isVisible={!!selected}
         minWidth={300}
         minHeight={200}
-        lineClassName="!border-primary/30"
-        handleClassName="!w-2.5 !h-2.5 !bg-primary !border-background !rounded-sm"
+        lineClassName="!border-primary/20"
+        handleClassName="!w-2 !h-2 !bg-primary/70 !border-background !rounded-sm"
       />
-      <div className="w-full h-full rounded-xl border border-dashed border-border/60 bg-muted/10 backdrop-blur-sm">
-        <input
-          value={nodeData.label || "Frame"}
-          onChange={(e) => updateNodeData(id, { label: e.target.value })}
-          className="absolute -top-3 left-3 bg-background border border-border rounded-md px-2 py-0.5 text-[11px] font-medium text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/50 focus:text-foreground"
-        />
+      <div className="w-full h-full rounded-xl border border-dashed border-border/40 bg-white/[0.02]">
+        <div className="absolute top-2 left-2.5">
+          <input
+            value={nodeData.label || "Frame"}
+            onChange={(e) => updateNodeData(id, { label: e.target.value })}
+            className="bg-transparent text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider focus:outline-none focus:text-muted-foreground w-24"
+          />
+        </div>
       </div>
     </div>
   );
