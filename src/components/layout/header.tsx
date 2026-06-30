@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Play, Settings, Zap, Loader2, RotateCcw } from "lucide-react";
+import { Play, Settings, Zap, Loader2, RotateCcw, Undo2, Redo2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -10,14 +10,41 @@ import { SettingsDialog } from "@/components/panels/settings-dialog";
 import { useWorkflowStore } from "@/store/workflow-store";
 import { useExecuteWorkflow } from "@/hooks/use-execute-workflow";
 import { getProviderLabel } from "@/providers/llm";
+import { useStore } from "zustand";
+
+function useTemporalStore() {
+  const store = useWorkflowStore.temporal;
+  const undo = useStore(store, (s) => s.undo);
+  const redo = useStore(store, (s) => s.redo);
+  const pastStates = useStore(store, (s) => s.pastStates);
+  const futureStates = useStore(store, (s) => s.futureStates);
+  return { undo, redo, canUndo: pastStates.length > 0, canRedo: futureStates.length > 0 };
+}
 
 export function Header() {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const { provider, apiKey, nodes, resetNodeStatuses } = useWorkflowStore();
+  const { provider, apiKey, nodes, resetNodeStatuses, workflowName, setWorkflowName } =
+    useWorkflowStore();
   const { execute, isRunning } = useExecuteWorkflow();
+  const { undo, redo, canUndo, canRedo } = useTemporalStore();
 
   const hasNodes = nodes.length > 0;
   const isConfigured = !!apiKey;
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "z" && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      if ((e.metaKey || e.ctrlKey) && e.key === "z" && e.shiftKey) {
+        e.preventDefault();
+        redo();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [undo, redo]);
 
   return (
     <>
@@ -32,9 +59,47 @@ export function Header() {
               <Zap className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <h1 className="text-sm font-semibold tracking-tight">FlowCraft</h1>
-              <p className="text-[10px] text-muted-foreground -mt-0.5">AI Workflow Builder</p>
+              <input
+                value={workflowName}
+                onChange={(e) => setWorkflowName(e.target.value)}
+                className="text-sm font-semibold tracking-tight bg-transparent border-none outline-none focus:ring-0 w-40 text-foreground placeholder:text-muted-foreground"
+                placeholder="Untitled Workflow"
+              />
+              <p className="text-[10px] text-muted-foreground -mt-0.5">FlowCraft</p>
             </div>
+          </div>
+
+          <div className="w-px h-5 bg-border" />
+
+          <div className="flex items-center gap-0.5">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => undo()}
+                  disabled={!canUndo}
+                >
+                  <Undo2 className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Undo (Ctrl+Z)</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7"
+                  onClick={() => redo()}
+                  disabled={!canRedo}
+                >
+                  <Redo2 className="h-3.5 w-3.5" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Redo (Ctrl+Shift+Z)</TooltipContent>
+            </Tooltip>
           </div>
         </div>
 

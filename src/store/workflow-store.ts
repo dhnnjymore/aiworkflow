@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { temporal } from "zundo";
 import {
   type Node,
   type Edge,
@@ -24,6 +25,7 @@ export interface NodeData {
   prompt?: string;
   output?: string;
   error?: string;
+  note?: string;
   [key: string]: unknown;
 }
 
@@ -38,6 +40,7 @@ interface WorkflowState {
   provider: LLMProvider;
   apiKey: string;
   inspectorOpen: boolean;
+  workflowName: string;
 
   setNodes: (nodes: WorkflowNode[]) => void;
   setEdges: (edges: WorkflowEdge[]) => void;
@@ -46,87 +49,119 @@ interface WorkflowState {
   onConnect: (connection: Connection) => void;
   addNode: (node: WorkflowNode) => void;
   removeNode: (id: string) => void;
+  duplicateNode: (id: string) => void;
   updateNodeData: (id: string, data: Partial<NodeData>) => void;
   setSelectedNode: (id: string | null) => void;
   setIsRunning: (running: boolean) => void;
   setProvider: (provider: LLMProvider) => void;
   setApiKey: (key: string) => void;
   setInspectorOpen: (open: boolean) => void;
+  setWorkflowName: (name: string) => void;
   resetNodeStatuses: () => void;
 }
 
 export const useWorkflowStore = create<WorkflowState>()(
   persist(
-    (set, get) => ({
-      nodes: [],
-      edges: [],
-      selectedNodeId: null,
-      isRunning: false,
-      provider: "openai",
-      apiKey: "",
-      inspectorOpen: false,
+    temporal(
+      (set, get) => ({
+        nodes: [],
+        edges: [],
+        selectedNodeId: null,
+        isRunning: false,
+        provider: "openai",
+        apiKey: "",
+        inspectorOpen: false,
+        workflowName: "Untitled Workflow",
 
-      setNodes: (nodes) => set({ nodes }),
-      setEdges: (edges) => set({ edges }),
+        setNodes: (nodes) => set({ nodes }),
+        setEdges: (edges) => set({ edges }),
 
-      onNodesChange: (changes) => {
-        set({ nodes: applyNodeChanges(changes, get().nodes) });
-      },
+        onNodesChange: (changes) => {
+          set({ nodes: applyNodeChanges(changes, get().nodes) });
+        },
 
-      onEdgesChange: (changes) => {
-        set({ edges: applyEdgeChanges(changes, get().edges) });
-      },
+        onEdgesChange: (changes) => {
+          set({ edges: applyEdgeChanges(changes, get().edges) });
+        },
 
-      onConnect: (connection) => {
-        set({
-          edges: addEdge(
-            { ...connection, animated: false },
-            get().edges
-          ),
-        });
-      },
+        onConnect: (connection) => {
+          set({
+            edges: addEdge(
+              { ...connection, animated: false },
+              get().edges
+            ),
+          });
+        },
 
-      addNode: (node) => {
-        set({ nodes: [...get().nodes, node] });
-      },
+        addNode: (node) => {
+          set({ nodes: [...get().nodes, node] });
+        },
 
-      removeNode: (id) => {
-        set({
-          nodes: get().nodes.filter((n) => n.id !== id),
-          edges: get().edges.filter((e) => e.source !== id && e.target !== id),
-          selectedNodeId: get().selectedNodeId === id ? null : get().selectedNodeId,
-        });
-      },
+        removeNode: (id) => {
+          set({
+            nodes: get().nodes.filter((n) => n.id !== id),
+            edges: get().edges.filter((e) => e.source !== id && e.target !== id),
+            selectedNodeId: get().selectedNodeId === id ? null : get().selectedNodeId,
+          });
+        },
 
-      updateNodeData: (id, data) => {
-        set({
-          nodes: get().nodes.map((node) =>
-            node.id === id
-              ? { ...node, data: { ...node.data, ...data } }
-              : node
-          ),
-        });
-      },
-
-      setSelectedNode: (id) => {
-        set({ selectedNodeId: id, inspectorOpen: id !== null });
-      },
-
-      setIsRunning: (running) => set({ isRunning: running }),
-      setProvider: (provider) => set({ provider }),
-      setApiKey: (key) => set({ apiKey: key }),
-      setInspectorOpen: (open) => set({ inspectorOpen: open }),
-
-      resetNodeStatuses: () => {
-        set({
-          nodes: get().nodes.map((node) => ({
+        duplicateNode: (id) => {
+          const node = get().nodes.find((n) => n.id === id);
+          if (!node) return;
+          const newId = `${node.data.type}-${Date.now()}`;
+          const clone: WorkflowNode = {
             ...node,
-            data: { ...node.data, status: "idle" as NodeStatus, error: undefined, output: undefined },
-          })),
-          edges: get().edges.map((edge) => ({ ...edge, animated: false })),
-        });
-      },
-    }),
+            id: newId,
+            position: { x: node.position.x + 50, y: node.position.y + 50 },
+            selected: false,
+            data: {
+              ...node.data,
+              status: "idle" as NodeStatus,
+              output: undefined,
+              error: undefined,
+            },
+          };
+          set({ nodes: [...get().nodes, clone], selectedNodeId: newId });
+        },
+
+        updateNodeData: (id, data) => {
+          set({
+            nodes: get().nodes.map((node) =>
+              node.id === id
+                ? { ...node, data: { ...node.data, ...data } }
+                : node
+            ),
+          });
+        },
+
+        setSelectedNode: (id) => {
+          set({ selectedNodeId: id, inspectorOpen: id !== null });
+        },
+
+        setIsRunning: (running) => set({ isRunning: running }),
+        setProvider: (provider) => set({ provider }),
+        setApiKey: (key) => set({ apiKey: key }),
+        setInspectorOpen: (open) => set({ inspectorOpen: open }),
+        setWorkflowName: (name) => set({ workflowName: name }),
+
+        resetNodeStatuses: () => {
+          set({
+            nodes: get().nodes.map((node) => ({
+              ...node,
+              data: { ...node.data, status: "idle" as NodeStatus, error: undefined, output: undefined },
+            })),
+            edges: get().edges.map((edge) => ({ ...edge, animated: false })),
+          });
+        },
+      }),
+      {
+        partialize: (state) => ({
+          nodes: state.nodes,
+          edges: state.edges,
+        }),
+        limit: 30,
+      }
+    ),
     {
       name: "workflow-storage",
       partialize: (state) => ({
@@ -134,6 +169,7 @@ export const useWorkflowStore = create<WorkflowState>()(
         edges: state.edges,
         provider: state.provider,
         apiKey: state.apiKey,
+        workflowName: state.workflowName,
       }),
     }
   )

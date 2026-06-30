@@ -3,6 +3,7 @@
 import React from "react";
 import { type NodeProps } from "@xyflow/react";
 import { Monitor, Copy, Check, GripHorizontal } from "lucide-react";
+import Markdown from "react-markdown";
 import { BaseNode } from "./base-node";
 import { useWorkflowStore, type NodeData, type WorkflowNode } from "@/store/workflow-store";
 import { motion, AnimatePresence } from "framer-motion";
@@ -48,6 +49,8 @@ export function OutputNode({ id, data, selected }: NodeProps<WorkflowNode>) {
       selected={!!selected}
       hasOutput={false}
       accentColor="bg-emerald-500/15 text-emerald-400"
+      note={nodeData.note}
+      onNoteChange={(note) => updateNodeData(id, { note })}
     >
       <AnimatePresence mode="wait">
         {nodeData.output ? (
@@ -73,9 +76,9 @@ export function OutputNode({ id, data, selected }: NodeProps<WorkflowNode>) {
             </div>
             <div
               style={{ maxHeight: height }}
-              className="text-[11px] text-foreground/80 bg-muted/30 rounded-lg p-2.5 overflow-y-auto leading-relaxed whitespace-pre-wrap"
+              className="text-[11px] text-foreground/80 bg-muted/30 rounded-lg p-2.5 overflow-y-auto leading-relaxed prose prose-invert prose-xs max-w-none"
             >
-              {nodeData.output}
+              <Markdown>{nodeData.output}</Markdown>
             </div>
             <div
               onPointerDown={onPointerDown}

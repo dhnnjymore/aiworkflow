@@ -18,6 +18,8 @@ export function PromptNode({ id, data, selected }: NodeProps<WorkflowNode>) {
       status={nodeData.status}
       selected={!!selected}
       accentColor="bg-amber-500/15 text-amber-400"
+      note={nodeData.note}
+      onNoteChange={(note) => updateNodeData(id, { note })}
     >
       <div className="space-y-2">
         <textarea

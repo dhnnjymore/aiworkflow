@@ -5,7 +5,7 @@ import { Handle, Position } from "@xyflow/react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { NodeStatus } from "@/store/workflow-store";
-import { Loader2, CheckCircle2, XCircle, GripVertical } from "lucide-react";
+import { Loader2, CheckCircle2, XCircle, GripVertical, StickyNote } from "lucide-react";
 
 interface BaseNodeProps {
   children: React.ReactNode;
@@ -16,6 +16,8 @@ interface BaseNodeProps {
   hasInput?: boolean;
   hasOutput?: boolean;
   accentColor?: string;
+  note?: string;
+  onNoteChange?: (note: string) => void;
 }
 
 const statusConfig: Record<NodeStatus, { border: string; glow: string }> = {
@@ -62,7 +64,10 @@ export function BaseNode({
   hasInput = true,
   hasOutput = true,
   accentColor,
+  note,
+  onNoteChange,
 }: BaseNodeProps) {
+  const [showNote, setShowNote] = React.useState(false);
   const config = statusConfig[status];
 
   return (
@@ -109,11 +114,33 @@ export function BaseNode({
           >
             {icon}
           </div>
-          <span className="text-xs font-medium text-foreground tracking-wide uppercase">
+          <span className="text-xs font-medium text-foreground tracking-wide uppercase flex-1">
             {label}
           </span>
+          {onNoteChange && (
+            <button
+              onClick={() => setShowNote(!showNote)}
+              className={cn(
+                "p-0.5 rounded transition-colors",
+                note ? "text-amber-400/70" : "text-muted-foreground/30 hover:text-muted-foreground/60"
+              )}
+            >
+              <StickyNote className="h-3 w-3" />
+            </button>
+          )}
         </div>
         <div className="p-3">{children}</div>
+        {onNoteChange && (showNote || note) && (
+          <div className="px-3 pb-2">
+            <textarea
+              value={note || ""}
+              onChange={(e) => onNoteChange(e.target.value)}
+              placeholder="Add a note..."
+              className="w-full text-[10px] bg-amber-500/5 border border-amber-500/10 rounded-md p-1.5 min-h-[28px] resize-none text-amber-200/70 placeholder:text-amber-500/20 focus:outline-none focus:border-amber-500/30"
+              rows={1}
+            />
+          </div>
+        )}
       </div>
 
       {hasOutput && (

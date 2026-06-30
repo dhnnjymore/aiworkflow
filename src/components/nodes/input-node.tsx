@@ -68,6 +68,8 @@ export function InputNode({ id, data, selected }: NodeProps<WorkflowNode>) {
       selected={!!selected}
       hasInput={false}
       accentColor="bg-blue-500/15 text-blue-400"
+      note={nodeData.note}
+      onNoteChange={(note) => updateNodeData(id, { note })}
     >
       <div className="space-y-2">
         <AnimatePresence mode="wait">
