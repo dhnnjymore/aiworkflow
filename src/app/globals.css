@@ -131,11 +131,17 @@ body {
 }
 
 .react-flow__handle {
-  width: 8px !important;
-  height: 8px !important;
+  width: 12px !important;
+  height: 12px !important;
   background: #52525b !important;
   border: 2px solid var(--color-background) !important;
   transition: all 0.15s ease;
+}
+
+.react-flow__handle::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
 }
 
 .react-flow__handle:hover {

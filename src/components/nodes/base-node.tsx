@@ -16,6 +16,7 @@ interface BaseNodeProps {
   hasInput?: boolean;
   hasOutput?: boolean;
   accentColor?: string;
+  resizable?: boolean;
 }
 
 const statusConfig: Record<NodeStatus, { border: string; glow: string }> = {
@@ -62,6 +63,7 @@ export function BaseNode({
   hasInput = true,
   hasOutput = true,
   accentColor,
+  resizable,
 }: BaseNodeProps) {
   const config = statusConfig[status];
 
@@ -72,7 +74,9 @@ export function BaseNode({
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
       className={cn(
-        "relative min-w-[240px] max-w-[320px] rounded-xl border bg-card transition-all duration-200",
+        "relative min-w-[240px] rounded-xl border bg-card transition-all duration-200",
+        !resizable && "max-w-[320px]",
+        resizable && "w-full h-full",
         config.border,
         config.glow,
         selected && "ring-2 ring-primary/50"

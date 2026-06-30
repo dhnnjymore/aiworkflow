@@ -25,10 +25,11 @@ export async function POST(req: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "dall-e-3",
+        model: "gpt-image-1",
         prompt: prompt.slice(0, 4000),
         n: 1,
         size: "1024x1024",
+        quality: "low",
       }),
     });
 
@@ -38,7 +39,19 @@ export async function POST(req: Request) {
     }
 
     const data = await response.json();
-    return Response.json({ url: data.data[0].url });
+    const item = data.data[0];
+
+    if (item.url) {
+      return Response.json({ url: item.url });
+    }
+
+    if (item.b64_json) {
+      return Response.json({
+        url: `data:image/png;base64,${item.b64_json}`,
+      });
+    }
+
+    throw new Error("No image data in response");
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return Response.json({ error: message }, { status: 500 });

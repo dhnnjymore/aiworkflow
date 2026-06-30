@@ -12,7 +12,7 @@ import {
   Globe,
   Database,
   Mail,
-  Lock,
+  Frame,
 } from "lucide-react";
 import { useWorkflowStore, type NodeData, type WorkflowNode } from "@/store/workflow-store";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -68,7 +68,7 @@ const nodeTemplates: NodeTemplate[] = [
     type: "coming-soon",
     label: "Condition",
     icon: <GitBranch className="h-4 w-4" />,
-    color: "text-zinc-500 border-transparent",
+    color: "text-cyan-400/50 border-transparent",
     nodeType: "coming-soon",
     comingSoon: true,
     description: "Branch workflow based on conditions",
@@ -78,7 +78,7 @@ const nodeTemplates: NodeTemplate[] = [
     type: "coming-soon",
     label: "Web Scraper",
     icon: <Globe className="h-4 w-4" />,
-    color: "text-zinc-500 border-transparent",
+    color: "text-orange-400/50 border-transparent",
     nodeType: "coming-soon",
     comingSoon: true,
     description: "Scrape content from URLs",
@@ -88,7 +88,7 @@ const nodeTemplates: NodeTemplate[] = [
     type: "coming-soon",
     label: "Memory",
     icon: <Database className="h-4 w-4" />,
-    color: "text-zinc-500 border-transparent",
+    color: "text-teal-400/50 border-transparent",
     nodeType: "coming-soon",
     comingSoon: true,
     description: "Store and retrieve data between runs",
@@ -98,7 +98,7 @@ const nodeTemplates: NodeTemplate[] = [
     type: "coming-soon",
     label: "Email",
     icon: <Mail className="h-4 w-4" />,
-    color: "text-zinc-500 border-transparent",
+    color: "text-red-400/50 border-transparent",
     nodeType: "coming-soon",
     comingSoon: true,
     description: "Send workflow output via email",
@@ -123,6 +123,19 @@ export function Toolbar() {
         type: template.type,
         status: "idle",
       },
+    };
+    addNode(node);
+  };
+
+  const handleAddFrame = () => {
+    const id = `frame-${Date.now()}`;
+    const xOffset = 200 + nodes.length * 50;
+    const node: WorkflowNode = {
+      id,
+      type: "frame",
+      position: { x: xOffset, y: 100 },
+      data: { label: "Frame", type: "frame", status: "idle" },
+      style: { width: 500, height: 300 },
     };
     addNode(node);
   };
@@ -153,14 +166,27 @@ export function Toolbar() {
         </Tooltip>
       ))}
 
+      <Tooltip delayDuration={0}>
+        <TooltipTrigger asChild>
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={handleAddFrame}
+            className="flex items-center justify-center w-9 h-9 rounded-lg border text-xs font-medium transition-colors cursor-pointer text-zinc-400 hover:bg-zinc-500/10 border-transparent hover:border-zinc-500/20"
+          >
+            <Frame className="h-4 w-4" />
+          </motion.button>
+        </TooltipTrigger>
+        <TooltipContent side="right">Frame</TooltipContent>
+      </Tooltip>
+
       <div className="h-px bg-border mx-1 my-0.5" />
 
       {comingSoonNodes.map((template, i) => (
         <Tooltip key={`soon-${i}`} delayDuration={0}>
           <TooltipTrigger asChild>
-            <div className="flex items-center justify-center w-9 h-9 rounded-lg opacity-40 cursor-not-allowed relative">
+            <div className={`flex items-center justify-center w-9 h-9 rounded-lg opacity-60 cursor-not-allowed ${template.color}`}>
               {template.icon}
-              <Lock className="h-2 w-2 absolute bottom-1 right-1 text-zinc-500" />
             </div>
           </TooltipTrigger>
           <TooltipContent side="right">
