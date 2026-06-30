@@ -18,6 +18,8 @@ export function ImageGenNode({ id, data, selected }: NodeProps<WorkflowNode>) {
       status={nodeData.status}
       selected={!!selected}
       accentColor="bg-pink-500/15 text-pink-400"
+      note={nodeData.note}
+      onNoteChange={(note) => updateNodeData(id, { note })}
     >
       <div className="space-y-2">
         <textarea

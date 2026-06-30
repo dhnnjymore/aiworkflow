@@ -23,6 +23,8 @@ export function KnowledgeNode({ id, data, selected }: NodeProps<WorkflowNode>) {
       status={nodeData.status}
       selected={!!selected}
       accentColor="bg-violet-500/15 text-violet-400"
+      note={nodeData.note}
+      onNoteChange={(note) => updateNodeData(id, { note })}
     >
       <AnimatePresence mode="wait">
         {knowledge && Object.keys(knowledge).length > 0 ? (

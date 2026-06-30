@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import {
   ReactFlow,
   Background,
@@ -41,9 +41,20 @@ export function WorkflowCanvas() {
     onConnect,
     setSelectedNode,
     setNodes,
+    selectedNodeId,
+    duplicateNode,
   } = useWorkflowStore();
 
-  const { screenToFlowPosition } = useReactFlow();
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "d") {
+        e.preventDefault();
+        if (selectedNodeId) duplicateNode(selectedNodeId);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [selectedNodeId, duplicateNode]);
 
   const onSelectionChange: OnSelectionChangeFunc = useCallback(
     ({ nodes: selectedNodes }) => {
@@ -156,7 +167,8 @@ export function WorkflowCanvas() {
         />
         <Controls
           showInteractive={false}
-          position="bottom-right"
+          position="bottom-left"
+          style={{ left: 60 }}
         />
         <MiniMap
           position="bottom-right"

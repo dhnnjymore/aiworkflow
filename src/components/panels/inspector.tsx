@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Trash2, FileText, BookOpen, MessageSquare, Monitor } from "lucide-react";
+import { X, Trash2, Copy, FileText, BookOpen, MessageSquare, Monitor } from "lucide-react";
 import { useWorkflowStore, type NodeData } from "@/store/workflow-store";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ const nodeIcons: Record<string, React.ReactNode> = {
 };
 
 export function Inspector() {
-  const { selectedNodeId, nodes, inspectorOpen, setInspectorOpen, setSelectedNode, removeNode } =
+  const { selectedNodeId, nodes, inspectorOpen, setInspectorOpen, setSelectedNode, removeNode, duplicateNode } =
     useWorkflowStore();
 
   const node = nodes.find((n) => n.id === selectedNodeId);
@@ -55,6 +55,16 @@ export function Inspector() {
               </div>
             </div>
             <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  if (selectedNodeId) duplicateNode(selectedNodeId);
+                }}
+              >
+                <Copy className="h-3.5 w-3.5" />
+              </Button>
               <Button
                 variant="ghost"
                 size="icon"

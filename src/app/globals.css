@@ -94,26 +94,13 @@ body {
   border-radius: var(--radius-lg) !important;
   overflow: hidden;
   box-shadow: 0 4px 24px rgba(0,0,0,0.4) !important;
-  display: flex !important;
-  flex-direction: row !important;
-}
-
-.react-flow__panel.bottom.right {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
 }
 
 .react-flow__controls-button {
   background: var(--color-card) !important;
-  border-bottom: none !important;
-  border-right: 1px solid var(--color-border) !important;
+  border-bottom: 1px solid var(--color-border) !important;
   fill: var(--color-muted-foreground) !important;
   color: var(--color-muted-foreground) !important;
-}
-
-.react-flow__controls-button:last-child {
-  border-right: none !important;
 }
 
 .react-flow__controls-button:hover {
@@ -204,4 +191,35 @@ body {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-muted-foreground);
+}
+
+.prose-xs h1, .prose-xs h2, .prose-xs h3 {
+  font-weight: 600;
+  margin: 0.5em 0 0.25em;
+}
+.prose-xs h1 { font-size: 1em; }
+.prose-xs h2 { font-size: 0.95em; }
+.prose-xs h3 { font-size: 0.9em; }
+.prose-xs p { margin: 0.3em 0; }
+.prose-xs ul, .prose-xs ol { margin: 0.3em 0; padding-left: 1.2em; }
+.prose-xs li { margin: 0.1em 0; }
+.prose-xs strong { font-weight: 600; }
+.prose-xs code {
+  background: rgba(255,255,255,0.06);
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  font-size: 0.9em;
+}
+.prose-xs pre {
+  background: rgba(255,255,255,0.04);
+  padding: 0.5em;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.3em 0;
+}
+.prose-xs blockquote {
+  border-left: 2px solid var(--color-border);
+  padding-left: 0.5em;
+  margin: 0.3em 0;
+  opacity: 0.8;
 }
