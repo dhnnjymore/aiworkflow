@@ -9,7 +9,7 @@ export function FrameNode({ id, data, selected }: NodeProps<WorkflowNode>) {
   const nodeData = data as NodeData;
 
   return (
-    <div className="w-full h-full relative">
+    <div className="w-full h-full relative" style={{ pointerEvents: "all" }}>
       <NodeResizer
         isVisible={!!selected}
         minWidth={300}
@@ -18,11 +18,11 @@ export function FrameNode({ id, data, selected }: NodeProps<WorkflowNode>) {
         handleClassName="!w-2 !h-2 !bg-primary/70 !border-background !rounded-sm"
       />
       <div className="w-full h-full rounded-xl border border-dashed border-border/40 bg-white/[0.02]">
-        <div className="absolute top-2 left-2.5">
+        <div className="absolute top-1.5 left-2.5">
           <input
             value={nodeData.label || "Frame"}
             onChange={(e) => updateNodeData(id, { label: e.target.value })}
-            className="bg-transparent text-[10px] font-medium text-muted-foreground/50 uppercase tracking-wider focus:outline-none focus:text-muted-foreground w-24"
+            className="bg-transparent text-[10px] font-medium text-muted-foreground/40 uppercase tracking-wider focus:outline-none focus:text-muted-foreground w-24"
           />
         </div>
       </div>

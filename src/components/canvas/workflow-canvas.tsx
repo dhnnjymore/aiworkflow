@@ -9,9 +9,11 @@ import {
   BackgroundVariant,
   type NodeTypes,
   type OnSelectionChangeFunc,
+  type OnNodeDrag,
+  useReactFlow,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
-import { useWorkflowStore } from "@/store/workflow-store";
+import { useWorkflowStore, type WorkflowNode } from "@/store/workflow-store";
 import { InputNode } from "@/components/nodes/input-node";
 import { KnowledgeNode } from "@/components/nodes/knowledge-node";
 import { PromptNode } from "@/components/nodes/prompt-node";
@@ -38,7 +40,10 @@ export function WorkflowCanvas() {
     onEdgesChange,
     onConnect,
     setSelectedNode,
+    setNodes,
   } = useWorkflowStore();
+
+  const { screenToFlowPosition } = useReactFlow();
 
   const onSelectionChange: OnSelectionChangeFunc = useCallback(
     ({ nodes: selectedNodes }) => {
@@ -49,6 +54,65 @@ export function WorkflowCanvas() {
       }
     },
     [setSelectedNode]
+  );
+
+  const onNodeDragStop: OnNodeDrag<WorkflowNode> = useCallback(
+    (_event, draggedNode) => {
+      if (draggedNode.type === "frame") return;
+
+      const frames = nodes.filter((n) => n.type === "frame" && n.id !== draggedNode.id);
+      let newParentId: string | undefined;
+
+      for (const frame of frames) {
+        const fw = (frame.style?.width as number) || 500;
+        const fh = (frame.style?.height as number) || 300;
+        const fx = frame.position.x;
+        const fy = frame.position.y;
+
+        const nx = draggedNode.position.x + (draggedNode.parentId === frame.id ? fx : 0);
+        const ny = draggedNode.position.y + (draggedNode.parentId === frame.id ? fy : 0);
+
+        if (nx >= fx && nx <= fx + fw && ny >= fy && ny <= fy + fh) {
+          newParentId = frame.id;
+          break;
+        }
+      }
+
+      const currentParent = draggedNode.parentId;
+
+      if (newParentId && currentParent !== newParentId) {
+        const frame = frames.find((f) => f.id === newParentId)!;
+        const updated = nodes.map((n) => {
+          if (n.id === draggedNode.id) {
+            return {
+              ...n,
+              parentId: newParentId,
+              position: {
+                x: n.position.x - frame.position.x,
+                y: n.position.y - frame.position.y,
+              },
+            };
+          }
+          return n;
+        });
+        setNodes(updated);
+      } else if (!newParentId && currentParent) {
+        const parentFrame = nodes.find((n) => n.id === currentParent);
+        const updated = nodes.map((n) => {
+          if (n.id === draggedNode.id) {
+            const result = { ...n, parentId: undefined, position: {
+              x: n.position.x + (parentFrame?.position.x || 0),
+              y: n.position.y + (parentFrame?.position.y || 0),
+            }};
+            delete result.parentId;
+            return result;
+          }
+          return n;
+        });
+        setNodes(updated);
+      }
+    },
+    [nodes, setNodes]
   );
 
   const minimapStyle = useMemo(
@@ -69,6 +133,7 @@ export function WorkflowCanvas() {
         onConnect={onConnect}
         onSelectionChange={onSelectionChange}
         onPaneClick={() => setSelectedNode(null)}
+        onNodeDragStop={onNodeDragStop}
         nodeTypes={nodeTypes}
         fitView
         fitViewOptions={{ padding: 0.3 }}
@@ -92,7 +157,6 @@ export function WorkflowCanvas() {
         <Controls
           showInteractive={false}
           position="bottom-right"
-          className="!right-[120px]"
         />
         <MiniMap
           position="bottom-right"
