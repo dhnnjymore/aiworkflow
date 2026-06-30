@@ -135,7 +135,7 @@ export function Toolbar() {
       type: "frame",
       position: { x: xOffset, y: 100 },
       data: { label: "Frame", type: "frame", status: "idle" },
-      style: { width: 500, height: 300 },
+      style: { width: 500, height: 300, zIndex: -1 },
     };
     addNode(node);
   };

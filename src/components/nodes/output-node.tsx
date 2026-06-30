@@ -26,7 +26,7 @@ export function OutputNode({ data, selected }: NodeProps<WorkflowNode>) {
         minWidth={240}
         minHeight={120}
         lineClassName="!border-primary/30"
-        handleClassName="!w-2.5 !h-2.5 !bg-primary !border-background !rounded-sm"
+        handleClassName="!w-2 !h-2 !bg-primary !border-background !rounded-sm"
       />
       <BaseNode
         label="Output"
@@ -35,7 +35,6 @@ export function OutputNode({ data, selected }: NodeProps<WorkflowNode>) {
         selected={!!selected}
         hasOutput={false}
         accentColor="bg-emerald-500/15 text-emerald-400"
-        resizable
       >
         <AnimatePresence mode="wait">
           {nodeData.output ? (
@@ -59,7 +58,7 @@ export function OutputNode({ data, selected }: NodeProps<WorkflowNode>) {
                   )}
                 </button>
               </div>
-              <div className="text-[11px] text-foreground/80 bg-muted/30 rounded-lg p-2.5 h-full overflow-y-auto leading-relaxed whitespace-pre-wrap">
+              <div className="text-[11px] text-foreground/80 bg-muted/30 rounded-lg p-2.5 max-h-[160px] overflow-y-auto leading-relaxed whitespace-pre-wrap">
                 {nodeData.output}
               </div>
             </motion.div>
